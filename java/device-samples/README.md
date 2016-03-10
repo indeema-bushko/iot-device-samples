@@ -1,7 +1,7 @@
 Device Samples
 ============================================
 
-Following stand-alone samples are present in this project to demonstrate the device connectivity to IBM Watson IoT Platform.
+Following stand-alone samples(present in this project) demonstrate the device connectivity to IBM Watson IoT Platform.
 
 * [Quickstart sample](https://github.com/ibm-messaging/iot-device-samples/blob/master/java/device-samples/src/main/java/com/ibm/iotf/sample/client/device/QuickstartDeviceEventPublish.java) that connects to Watson IoT Quickstart service and publishes an event.
 * [MQTT Device sample](https://github.com/ibm-messaging/iot-device-samples/blob/master/java/device-samples/src/main/java/com/ibm/iotf/sample/client/device/DeviceEventPublishWithCounter.java) that publishes an event, every second to IBM Watson IoT Platform using MQTT.
