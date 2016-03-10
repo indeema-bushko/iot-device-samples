@@ -1,7 +1,7 @@
 Device Management Samples
 ============================================
 
-Following stand-alone samples present in this project demonstrates the device management capabilities in IBM Watson IoT Platform.
+Following stand-alone samples(present in this project) demonstrates the device management capabilities in IBM Watson IoT Platform.
 
 * [SampleRasPiDMAgent](https://github.com/ibm-messaging/iot-device-samples/blob/master/java/device-management-sample/src/main/java/com/ibm/iotf/sample/devicemgmt/device/SampleRasPiDMAgent.java)- A sample agent code that shows how to perform various device management operations on Raspberry Pi.
 * [SampleRasPiManagedDevice](https://github.com/ibm-messaging/iot-device-samples/blob/master/java/device-management-sample/src/main/java/com/ibm/iotf/sample/devicemgmt/device/SampleRasPiManagedDevice.java) - A sample code that shows how one can perform both device operations and device management operations.
