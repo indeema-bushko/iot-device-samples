@@ -21,24 +21,6 @@ To build and run the sample, you must have the following installed:
 
 ----
 
-### Build & Run the sample using Eclipse
-
-You must have installed the [Eclipse Maven plugin](http://www.eclipse.org/m2e/), to import & run the samples in eclipse. Go to the next step, if you want to run manually.
-
-* Clone the gateway-samples project using git clone as follows,
-
-    `git clone https://github.com/ibm-messaging/iot-device-samples.git`
-    
-* Import the **device-samples** project into eclipse using the File->Import option in eclipse.
-
-* Modify the **device.properties** file with the device registration details (Refer below to know how to register the device in Watson IoT Platform).
-
-* Run the each of the sample by right clicking on the project and selecting "Run as" option.
-
-* Observe that the device connects to Watson IoT Platform and publishes events / subscribes to commands.
-
-----
-
 ### Register Device in IBM Watson IoT Platform
 
 Follow the steps in [this recipe](https://developer.ibm.com/recipes/tutorials/how-to-register-devices-in-ibm-iot-foundation/) to register your device in Watson IoT Platform if not registered already. And copy the registration details, like the following,
@@ -53,7 +35,26 @@ We need these details to connect the device to IBM Watson IoT Platform.
 
 ----
 
-### Building the sample
+
+### Build & Run the sample using Eclipse
+
+You must have installed the [Eclipse Maven plugin](http://www.eclipse.org/m2e/), to import & run the samples in eclipse. Go to the next step, if you want to run manually.
+
+* Clone the device-samples project using git clone as follows,
+
+    `git clone https://github.com/ibm-messaging/iot-device-samples.git`
+    
+* Import the **device-samples** project into eclipse using the File->Import option in eclipse.
+
+* Modify the **device.properties** file with the device registration details that you noted in the above step.
+
+* Run the each of the sample by right clicking on the project and selecting "Run as" option.
+
+* Observe that the device connects to Watson IoT Platform and publishes events / subscribes to commands.
+
+----
+
+### Building the sample - Required if you want to run the samples outside of Eclipse
 
 * Clone the device-samples project using git clone as follows,
    
