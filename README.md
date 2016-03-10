@@ -1,4 +1,4 @@
-# iot-device-samples(Update in progress)
+# iot-device-samples
 This repository contains samples for connecting your device(s) to the IBM Watson Internet of Things Platform in different languages. The samples include,
 
 * Publishing device events to Watson IoT Platform using MQTT
