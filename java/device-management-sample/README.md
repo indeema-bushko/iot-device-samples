@@ -14,7 +14,7 @@ The samples are written using the [Java Client Library](https://github.com/ibm-m
 
 ----
 
-### Tutorial explaning the Sample
+### Tutorial explaining the Sample
 
 Refer to [the recipe](https://developer.ibm.com/recipes/tutorials/connect-raspberry-pi-as-managed-device-to-ibm-iot-foundation/) that shows how to connect the Raspberry Pi device as managed device to IBM Watson Internet of Things Platform to perform various device management operations in step by step using this client library.
 
