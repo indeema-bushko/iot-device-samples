@@ -1,0 +1,53 @@
+[{
+	"id": "6fc0879c.903f78",
+	"type": "ibmiot out",
+	"authentication": "boundService",
+	"apiKey": "",
+	"outputType": "cmd",
+	"deviceId": "160490130025",
+	"deviceType": "iotsample-mbed-k64f",
+	"eventCommandType": "blink",
+	"format": "json",
+	"data": "4",
+	"name": "IBM IoT App Out",
+	"service": "registered",
+	"x": 847,
+	"y": 518,
+	"z": "cb4121a0.34bee",
+	"wires": []
+}, {
+	"id": "bdf085cb.420f78",
+	"type": "function",
+	"name": "blink rate",
+	"func": "rate = Math.round(msg.payload * 5);\nmsg.payload = \"{ \\\"rate\\\": \"+rate+ \" }\";\nreturn msg;",
+	"outputs": 1,
+	"x": 587,
+	"y": 477,
+	"z": "cb4121a0.34bee",
+	"wires": [
+		[
+			"6fc0879c.903f78",
+			"5bde5cc2.a421a4"
+		]
+	]
+}, {
+	"id": "5bde5cc2.a421a4",
+	"type": "debug",
+	"name": "Show Blink Rate",
+	"active": true,
+	"console": "false",
+	"complete": "payload",
+	"x": 838,
+	"y": 414,
+	"z": "cb4121a0.34bee",
+	"wires": []
+}, {
+	"id": "1dc589ed.e23a76",
+	"type": "comment",
+	"name": "Control LED blink rate using Potentiometer1",
+	"info": "The subflow converts the reading from potentiometer1 to an LED blink rate between 0 and 5.nn0 turns the LED offnnA value between 1 and 5 is the rate per second that the LED on the K64F will blink at.nnFinally the IoT Output node sends the blink command to the device. ",
+	"x": 682,
+	"y": 374,
+	"z": "cb4121a0.34bee",
+	"wires": []
+}]
