@@ -6,4 +6,4 @@ This repository contains samples for connecting your device(s) to the IBM Watson
 * Subscribing to commands from application
 * Respond to Device Management Requests
 
-Currently, there are samples for Java; information and instructions regarding the use of these samples can be found in their respective directories.
+Currently, there are samples for Java and Node-RED; information and instructions regarding the use of these samples can be found in their respective directories.
