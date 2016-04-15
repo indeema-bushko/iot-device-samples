@@ -38,10 +38,6 @@
 
     <properties>
 
-        <!-- This project specific properties -->
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <maven.build.skipTests>true</maven.build.skipTests>
-
         <!-- General properties -->
         <java.version>1.7</java.version>
 
@@ -53,58 +49,10 @@
 
     <dependencies>
     	<dependency>
-		    <groupId>com.ibm.messaging</groupId>
-		    <artifactId>ibmwiotp</artifactId>
-		    <version>1.0</version>
-		    <scope>system</scope>
-		    <systemPath>${project.basedir}/src/main/resources/ibmwiotp.jar</systemPath>
+	  		<groupId>com.ibm.messaging</groupId>
+	  		<artifactId>watson-iot</artifactId>
+	  		<version>0.1.0</version>
 		</dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.paho</groupId>
-            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.9.2</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -156,16 +104,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-    <repositories>
-
-        <!-- Dependency of the Paho mqqt snapshot is here -->
-        <repository>
-            <id>Eclipse Paho Release Repo</id>
-            <url>https://repo.eclipse.org/content/repositories/paho-snapshots/</url>
-        </repository>
-    </repositories>
-  
-  
 </project>
