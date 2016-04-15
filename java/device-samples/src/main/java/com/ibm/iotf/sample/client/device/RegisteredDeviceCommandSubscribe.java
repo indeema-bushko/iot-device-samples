@@ -26,6 +26,8 @@ import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 
 import com.google.gson.JsonObject;
 import com.ibm.iotf.client.device.Command;
@@ -68,7 +70,7 @@ public class RegisteredDeviceCommandSubscribe {
 
 	private final static String PROPERTIES_FILE_NAME = "/device.properties";
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MqttException {
 		
 		/**
 		  * Load device properties

@@ -24,12 +24,14 @@ package com.ibm.iotf.sample.client.device;
 import java.io.File;
 import java.util.Properties;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import com.google.gson.JsonObject;
 import com.ibm.iotf.client.device.DeviceClient;
 
 public class RegisteredDeviceEventPublishPropertiesFile {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MqttException {
 		//Provide the device specific data, as well as Auth-key and token using Properties class
 		//A Sample properties file is provided in the src folder
 		Properties options = DeviceClient.parsePropertiesFile(new File("C:\\temp\\device.properties"));
