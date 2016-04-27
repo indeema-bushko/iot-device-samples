@@ -68,7 +68,7 @@ You must have installed the [Eclipse Maven plugin](http://www.eclipse.org/m2e/),
 
     `mvn clean package`
     
-This will download the Java Client library for Watson IoT Platform (Currently its shipped as part of this sample, but soon it will be made available in maven central repository), download all required dependencies and starts the building process. Once built, the sample can be located in the target directory, for example, target\ibmiot-device-samples-0.0.1.jar.
+This will download the Java Client library for Watson IoT Platform, other required dependencies and starts the building process. Once built, the sample can be located in the target directory, for example, target\ibmiot-device-samples-0.0.1.jar.
 
 ----
 
@@ -77,8 +77,6 @@ This will download the Java Client library for Watson IoT Platform (Currently it
 * Run the sample using the following command,
 
     `mvn exec:java -Dexec.mainClass="com.ibm.iotf.sample.client.device.QuickstartDeviceEventPublish"`
-
-**Note:** If there is an Error, try extracting the ibmwiotp.jar present in target/classes directory to the same location and run again. Remember the jar must be extracted in the same location. 
 
 * Observe that the sample connects to Watson IoT Platform Quickstart service and publishes an event. You can view the same, [by visiting this link] (https://quickstart.internetofthings.ibmcloud.com/#/device/00aabbccde03). You may need to change the Device-id, if you have modified the sample with different deviceId.
 
@@ -91,9 +89,7 @@ This will download the Java Client library for Watson IoT Platform (Currently it
 * Run the sample using the following command,
 
     `mvn exec:java -Dexec.mainClass="com.ibm.iotf.sample.client.device.DeviceEventPublishWithCounter"`
-
-**Note:** If there is an Error, try extracting the ibmwiotp.jar present in target/classes directory to the same location and run again. Remember the jar must be extracted in the same location. 
-
+    
 * Observe that the sample connects to Watson IoT Platform Registered service and publishes an event every second. You can view the same by going to the platform dashboard.
 
 ----
