@@ -76,7 +76,7 @@ You must have installed the [Eclipse Maven plugin](http://www.eclipse.org/m2e/),
 
     `mvn clean package`
     
-This will download the Java Client library for Watson IoT Platform (Currently its shipped as part of this sample, but soon it will be made available in maven central repository), download all required dependencies and starts the building process. Once built, the sample can be located in the target directory, for example, target\ibmiot-device-management-sample-0.0.1.jar.
+This will download the Java Client library for Watson IoT Platform, other required dependencies and starts the building process. Once built, the sample can be located in the target directory, for example, target\ibmiot-device-management-sample-0.0.1.jar.
 
 ----
 
@@ -87,8 +87,6 @@ This will download the Java Client library for Watson IoT Platform (Currently it
 * Run the sample using the following command,
 
     `mvn exec:java -Dexec.mainClass="com.ibm.iotf.sample.devicemgmt.device.SampleRasPiDMAgent"`
-
-**Note:** If there is an Error, try extracting the ibmwiotp.jar present in target/classes directory to the same location and run again. Remember the jar must be extracted in the same location. 
 
 * Observe that the device connects to IBM Watson IoT Platform and lists down various device management operations that the sample agent can perform. Refer to [this recipe](https://developer.ibm.com/recipes/tutorials/connect-raspberry-pi-as-managed-device-to-ibm-iot-foundation/) for more information about how to run the RasPiDMAgent Sample.
 
