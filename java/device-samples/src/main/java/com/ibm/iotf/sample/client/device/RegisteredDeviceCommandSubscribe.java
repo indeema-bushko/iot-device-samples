@@ -77,7 +77,7 @@ public class RegisteredDeviceCommandSubscribe {
 		  */
 		Properties props = new Properties();
 		try {
-			props.load(DeviceEventPublishWithCounter.class.getResourceAsStream(PROPERTIES_FILE_NAME));
+			props.load(RegisteredDeviceCommandSubscribe.class.getResourceAsStream(PROPERTIES_FILE_NAME));
 		} catch (IOException e1) {
 			System.err.println("Not able to read the properties file, exiting..");
 			System.exit(-1);
