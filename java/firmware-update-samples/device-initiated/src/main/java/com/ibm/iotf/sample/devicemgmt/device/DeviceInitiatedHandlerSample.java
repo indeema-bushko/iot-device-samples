@@ -30,7 +30,6 @@ import com.google.gson.JsonElement;
 import com.ibm.iotf.devicemgmt.DeviceFirmware;
 import com.ibm.iotf.devicemgmt.DeviceInfo;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
-import com.ibm.iotf.sample.devicemgmt.device.DeviceFirmwareSample;
 
 import org.apache.commons.net.util.Base64;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -94,7 +93,7 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 		String username = trimedValue(props.getProperty("User-Name"));
 		String password = trimedValue(props.getProperty("Password"));
 		
-		currentFirmwareVersion = (props.getProperty("Device_Version"));
+		currentFirmwareVersion = (props.getProperty("DeviceInfo.fwVersion"));
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("https://")
@@ -113,7 +112,8 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 		System.out.println("Server Version: " + client.serverVersion());
 
 		// firmwareDB = client.database("firmwareDB", true);
-		firmwareDB = client.database("bar_packages", false);
+		// firmwareDB = client.database("bar_packages", false);
+		firmwareDB = client.database("firmware_repository", false);
 		
 		// Create update task
 		updateTask = new DebianFirmwareUpdate(false);
