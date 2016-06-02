@@ -19,7 +19,8 @@ import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 
 public abstract class Handler extends DeviceFirmwareHandler {
 	
-	protected static String FACTORY_FIRMWARE = "iot_1.0-1_armhf.deb";
+	protected static String FACTORY_FIRMWARE_NAME = "iot_1.0-1_armhf.deb";
+	protected static String FACTORY_FIRMWARE_VERSION = "1.0.1";
 	protected ManagedDevice dmClient = null;
 	
 	public Handler(ManagedDevice dmClient) {

@@ -15,16 +15,8 @@
 package com.ibm.iotf.sample.devicemgmt.device;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
@@ -33,13 +25,10 @@ import javax.management.ReflectionException;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import com.google.gson.JsonObject;
-import com.ibm.iotf.client.IoTFCReSTException;
-import com.ibm.iotf.client.api.APIClient;
 import com.ibm.iotf.devicemgmt.DeviceData;
 import com.ibm.iotf.devicemgmt.DeviceFirmware;
 import com.ibm.iotf.devicemgmt.DeviceInfo;
 import com.ibm.iotf.devicemgmt.DeviceMetadata;
-import com.ibm.iotf.devicemgmt.LogSeverity;
 import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareState;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 import com.ibm.iotf.sample.devicemgmt.device.SystemObject;
@@ -67,11 +56,6 @@ public class DeviceFirmwareSample {
 	private final static String PROPERTIES_FILE_NAME = "/DMDeviceSample.properties";
 	private ManagedDevice dmClient;
 	
-	// Threadpool used to read and send the attached device events to the Watson IoT Platform.
-	// One can increase the number of threads when more & more devices are attached and need to
-	// send in lesser frequent interval.
-	private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
-
 	/**
 	 * This method builds the device objects required to create the
 	 * ManagedClient

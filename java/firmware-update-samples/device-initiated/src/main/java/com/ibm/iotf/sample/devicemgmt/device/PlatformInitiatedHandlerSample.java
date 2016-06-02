@@ -95,9 +95,9 @@ public class PlatformInitiatedHandlerSample extends Handler {
 					if (status == true) {
 						System.out.println("Retained Current Firmware as is ");
 					} else {
-						updateTask.updateFirmware(Handler.FACTORY_FIRMWARE);
+						updateTask.updateFirmware(Handler.FACTORY_FIRMWARE_NAME);
 						System.out.println("Restored Factory Firmware version after failing to revert back to Current version");
-						setCurrentFirmware(Handler.FACTORY_FIRMWARE);
+						setCurrentFirmware(Handler.FACTORY_FIRMWARE_NAME);
 					} 
 				}
 			}

@@ -130,7 +130,7 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 				if (checkAndSetFirmware()){
 					downloadFromCloudant();
 					// ToDo: update the firmware
-					updateFirmware(null); // ToDo: we need to maintain and keep updating the DeviceFirmware object
+					updateFirmware(dmClient.getDeviceData().getDeviceFirmware()); // ToDo: we need to maintain and keep updating the DeviceFirmware object
 					updateWatsonIoT();
 				} 
 			    Thread.sleep(1000 * 60); // ToDo: configure 
@@ -284,21 +284,24 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 		if ( status == true ){
 			System.out.println("Successfully Upgraded Latest Firmware");
 			setCurrentFirmware(getLatestFirmware());
+			this.currentFirmwareVersion = this.latestFirmwareVersion;
 		} else {
 			System.out.println("Upgrade failed. Reverting back to the current version");
-			status = updateTask.updateFirmware(getLatestFirmware());
+			status = updateTask.updateFirmware(getCurrentFirmware());
 			if (status == true) {
 				System.out.println("Retained Current Firmware as is ");
 			} else {
-				updateTask.updateFirmware(Handler.FACTORY_FIRMWARE);
+				updateTask.updateFirmware(Handler.FACTORY_FIRMWARE_NAME);
+				this.currentFirmwareVersion = Handler.FACTORY_FIRMWARE_VERSION;
 				System.out.println("Restored Factory Firmware version after failing to revert back to Current version");
-				setCurrentFirmware(Handler.FACTORY_FIRMWARE);
+				setCurrentFirmware(Handler.FACTORY_FIRMWARE_NAME);
 			} 
 		}
 	}
 
 	private void updateWatsonIoT() {
 		DeviceInfo deviceInfo = dmClient.getDeviceData().getDeviceInfo();
+		System.out.println("Updating the Firmware Version to the current version "+currentFirmwareVersion);
 		deviceInfo.setFwVersion(currentFirmwareVersion);
 		try {
 			dmClient.sendManageRequest(0, true, true);
