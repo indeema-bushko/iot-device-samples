@@ -1,16 +1,17 @@
 /**
  *****************************************************************************
- Copyright (c) 2015-16 IBM Corporation and other Contributors.
+ Copyright (c) 2016 IBM Corporation and other Contributors.
  All rights reserved. This program and the accompanying materials
  are made available under the terms of the Eclipse Public License v1.0
  which accompanies this distribution, and is available at
  http://www.eclipse.org/legal/epl-v10.html
  Contributors:
- Mike Tran - Initial Contribution
  Sathiskumar Palaniappan - Initial Contribution
+ Prasanna Alur Mathada - Initial Contribution
  *****************************************************************************
  *
  */
+
 package com.ibm.iotf.sample.devicemgmt.device;
 
 import java.io.*;
@@ -124,16 +125,18 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	
 	@Override
 	public void run() {
-		try{
-			if (checkAndSetFirmware()){
-				downloadFromCloudant();
-				// ToDo: update the firmware
-				updateFirmware(null); // ToDo: we need to maintain and keep updating the DeviceFirmware object
-				updateWatsonIoT();
-			} 
-		    Thread.sleep(1000 * 60); // ToDo: configure 
-		} catch (Exception e) {
-			e.printStackTrace();
+		while(true) {
+			try{
+				if (checkAndSetFirmware()){
+					downloadFromCloudant();
+					// ToDo: update the firmware
+					updateFirmware(null); // ToDo: we need to maintain and keep updating the DeviceFirmware object
+					updateWatsonIoT();
+				} 
+			    Thread.sleep(1000 * 60); // ToDo: configure 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

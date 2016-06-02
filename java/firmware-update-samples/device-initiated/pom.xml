@@ -2,12 +2,12 @@
     xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.ibm.messaging</groupId>
-  <artifactId>ibmiot-firmware-update-samples</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>ibmiot-firmware-update-samples</name>
-  <description>Sample demonstrating firmware update or factory reset with Watson IoT Platform DM protocol</description>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ibm.messaging</groupId>
+    <artifactId>ibmiot-firmware-update-samples</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>ibmiot-firmware-update-samples</name>
+    <description>Sample demonstrating firmware update or factory reset with Watson IoT Platform DM protocol</description>
   
     <url>https://github.com/ibm-messaging/iot-device-samples</url>
 	

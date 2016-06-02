@@ -1,16 +1,17 @@
 /**
  *****************************************************************************
- * Copyright (c) 2016 IBM Corporation and other Contributors.
-
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- * Sathiskumar Palaniappan - Initial Contribution
+ Copyright (c) 2016 IBM Corporation and other Contributors.
+ All rights reserved. This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v1.0
+ which accompanies this distribution, and is available at
+ http://www.eclipse.org/legal/epl-v10.html
+ Contributors:
+ Sathiskumar Palaniappan - Initial Contribution
+ Prasanna Alur Mathada - Initial Contribution
  *****************************************************************************
+ *
  */
+
 package com.ibm.iotf.sample.devicemgmt.device;
 
 import java.io.IOException;
@@ -198,7 +199,7 @@ public class DeviceFirmwareSample {
 				event.addProperty("mem",  obj.getMemoryUsed());
 						
 				sample.dmClient.publishEvent("blink", event);
-				System.out.println("<--(GW) Device event :: "+event);
+				System.out.println("<-- Device event :: "+event);
 				Thread.sleep(5000);
 			}
 		} catch (Exception e) {
