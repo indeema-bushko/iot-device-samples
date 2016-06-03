@@ -34,22 +34,45 @@ public abstract class Handler extends DeviceFirmwareHandler {
 	protected HTTPFirmwareDownload downloadTask;
 	protected DebianFirmwareUpdate updateTask;
 	
+	/**
+	 * Gets the current firmware
+	 * @return
+	 */	
 	protected String getCurrentFirmware() {
 		return currentFirmware;
 	}
 	
+	/**
+	 * Sets the current firmware
+	 * @param currentFirmware
+	 */
 	protected void setCurrentFirmware(String currentFirmware) {
 		this.currentFirmware = currentFirmware;
 	}
 	
+	/**
+	 * Gets the latest firmware
+	 * @return
+	 */
 	protected String getLatestFirmware() {
 		return latestFirmware;
 	}
 	
+	/**
+	 * Sets the latest firmware
+	 * @param latestFirmware
+	 */
 	protected void setLatestFirmware(String latestFirmware) {
 		this.latestFirmware = latestFirmware;
 	}
 	
+	/**
+	 * Based on the User input on the mode or choice of source of Firmware Upgrade, associated
+	 * CASE invokes relevant methods.  
+	 * @param option
+	 * @param dmClient
+	 * @return
+	 */
 	public static Handler createHandler(String option, ManagedDevice dmClient) {
 		switch(option) {
 			case "Device": return new DeviceInitiatedHandlerSample(dmClient);

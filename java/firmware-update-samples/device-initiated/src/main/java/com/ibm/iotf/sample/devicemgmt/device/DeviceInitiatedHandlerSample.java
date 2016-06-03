@@ -37,9 +37,9 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 /**
  * This Device Initiated Firmware handler demonstrates how the device snoops for the 
- * availability of the newer instance of firmware in the repository. Once a newer release
- * is available, then Firmware Upgrade is performed after downloading the package. 
- * On failure, the sample performs the factory reset.
+ * availability of the newer version of firmware in the repository. Once a newer version
+ * is made available on the Cloudant NoSQL Database, Firmware Download and Firmware Upgrade 
+ * are triggered and performed. On failure, the sample performs the factory reset.
  */
 
 /**
@@ -73,15 +73,15 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	private String latestFirmwareVersion;
 	
 	/**
-	 * Connect to Cloundant NoSQL DB based on the user inputs and 
-	 * create the config DB if its not created already
+	 * Connect to Cloundant NoSQL DB based on the authentication credentials provided as
+	 * user inputs in the DMDeviceSample.properties file. 
 	 * 
 	 **/
 	@Override
 	public void prepare(String propertiesFile) {
 	
 		/**
-		 * Load device properties
+		 * Load device properties file
 		 */
 		Properties props = new Properties();
 		try {
@@ -90,6 +90,10 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 			System.err.println("Not able to read the properties file, exiting..");
 			System.exit(-1);
 		}
+		
+		/**
+		 * Read individual parameter values from device properties file
+		 */
 			
 		String username = trimedValue(props.getProperty("User-Name"));
 		String password = trimedValue(props.getProperty("Password"));
@@ -112,8 +116,11 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 		System.out.println("Connected to Cloudant");
 		System.out.println("Server Version: " + client.serverVersion());
 
-		// firmwareDB = client.database("firmwareDB", true);
-		// firmwareDB = client.database("bar_packages", false);
+		/**
+		 * Pass the name of the Cloudant NoSQL Database to 'firmwareDB'
+		 * To create the Cloudant NoSQL Database 'firmware_repository', replace 'false' with 'true'
+		 */
+		
 		firmwareDB = client.database("firmware_repository", false);
 		
 		// Create update task
@@ -127,12 +134,21 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	public void run() {
 		while(true) {
 			try{
+				/**
+				 * Compare the firmware version on device with the one on Cloudant Database
+				 * If the firmware version on Cloudant Database is higher, then initiate
+				 * Firmware Download from Cloudant and trigger Firmware Upgrade.
+				 * Finally, update the firmware version to Watson IoT Platform.
+				 */
 				if (checkAndSetFirmware()){
 					downloadFromCloudant();
 					// ToDo: update the firmware
 					updateFirmware(dmClient.getDeviceData().getDeviceFirmware()); // ToDo: we need to maintain and keep updating the DeviceFirmware object
 					updateWatsonIoT();
 				} 
+				/** If the firmware version on device and Cloudant Database is same,
+				 * then, sleep for 60 Seconds and compare again after sleep times out.
+				 */
 			    Thread.sleep(1000 * 60); // ToDo: configure 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -142,9 +158,10 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	
 	
 	/**
-	 * The following code snippet snoops the Cloudant NoSQL DB for any changes / updates
-	 * If the changes / updates are detected, then, it returns the name of the package, 
-	 * that has changed / updated since the last known state / snooped time.
+	 * The checkAndSetFirmware method snoops the Cloudant NoSQL DB for any new addition of
+	 * Firmware package, by comparing the firmware version on the device with the latest 
+	 * Document on Cloudant Database. If a latest firmware package is detected or identified,
+	 * then, the method returns the name and version of the Firmware package.
 	 **/
 	
 	private boolean checkAndSetFirmware() {
@@ -169,17 +186,24 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 			
 			for (Row row : rows) {
 				jsonList.add(row.getDoc());
+				// Fetch the Cloudant Document(s)
 				JsonObject attachment = row.getDoc();
+				// Ignore deleted Documents
 				if(attachment.get("_deleted") != null && attachment.get("_deleted").getAsBoolean() == true) {
 					continue;
 				}
 				
 				System.out.println(attachment);
+				// Retrieve the version of the firmware package
 				String retrievedVersion = attachment.get("version").getAsString();
 				System.out.println(retrievedVersion);
+				// Compare the firmware version on device with the one retrieved from Cloudant Database 
                 if(isVersionGreater(version, retrievedVersion)) {
+                	// Successful comparison indicates that Firmware update is needed
                 	updatedNeeded = true;
+                	// Fetch Document ID of the latest firmware
                 	docId = row.getId();
+                	// Fetch Firmware version of the latest firmware
                 	latestFirmwareVersion = retrievedVersion;
                 	version = retrievedVersion;
                     
@@ -189,18 +213,20 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 					Iterator<Entry<String, JsonElement>> itr = entrySet.iterator();
 					if(itr.hasNext()) {
 						Entry<String, JsonElement> entry = itr.next();
+						// Set the name of the latest firmware package
 						setLatestFirmware(entry.getKey());
 						System.out.println("Setting latest firmware to "+entry.getKey());
 					}
 				}
 			}
 		} 
+		// Return True if Firmware Update is needed, else, return False
 		return updatedNeeded;
 	}
 	
 	/**
-	 * This method checks whether the retrieved version is higher than
-	 * the deviceVersion.
+	 * This method checks whether the retrieved version ( Firmware version on Cloudant DB) 
+	 * is higher than the deviceVersion (Firmware version on the Device).
 	 */
 	private boolean isVersionGreater(String deviceVersion, String retrievedVersion) {
 		String[] retrieved = retrievedVersion.split("\\.");
@@ -227,19 +253,15 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	
 
 	/**
-	* Process the Restore Operation
+	 * If the output of checkAndSetFirmware() is true, then Firmware Download is initiated
+	 * by passing the Cloudant Document ID of the latest firmware to downloadFromCloudant().
+	 * The method reads the contents of the Cloudant Document and writes it to a file on the
+	 * local file system. If it encounters issues while writing to a file, then, it raises
+	 * exception.
 	*/
 	
 	public void downloadFromCloudant() {
-		
-		// The following call, picks the Cloudant Document ID from a file on file system 
-		// restoreOptions();
-		
-		// The following call, picks the Cloudant Document from the Cloudant NoSQL DB
-		// readCollections();
-		
-		// Assigning the output of jsonList to fileContent variable
-			
+					
 		try{
 			Foo foo = firmwareDB.find(Foo.class, docId, new Params().attachments());
 			String attachmentData = foo.getAttachments().get(getLatestFirmware()).getData();
@@ -258,6 +280,11 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	}
 
 	
+	/**
+	 * Method that helps trim the output of the Device Properties File
+	 * @param value
+	 * @return
+	 */
 	private static String trimedValue(String value) {
 		if(value == null || value == "") {
 			return "";
@@ -268,10 +295,16 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 
 	@Override
 	public void downloadFirmware(DeviceFirmware deviceFirmware) {
-		// TODO Auto-generated method stub
 		
 	}
-
+	
+	/**
+	 * Successful completion of downloadFromCloudant() shall trigger the updateFirmware()
+	 * Here, the method is designed to handle three different scenarios:
+	 * 		1. Successfully Upgrade to the latest Firmware version
+	 * 		2. If the Upgrade fails, then, tries to restore the current firmware version
+	 * 		3. If the restoration to current firmware fails, then Factory-Reset is initiated
+	 */
 	@Override
 	public void updateFirmware(DeviceFirmware deviceFirmware) {
 		boolean status = updateTask.updateFirmware(getLatestFirmware());
@@ -299,6 +332,10 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 		}
 	}
 
+	/**
+	 * The updateWatsonIoT() method, post completion of Firmware Upgrade, updates the 
+	 * Watson IoT Platform with the Firmware version details
+	 */
 	private void updateWatsonIoT() {
 		DeviceInfo deviceInfo = dmClient.getDeviceData().getDeviceInfo();
 		System.out.println("Updating the Firmware Version to the current version "+currentFirmwareVersion);
@@ -307,7 +344,6 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 			dmClient.sendManageRequest(0, true, true);
 		} catch (MqttException e) {
 			System.err.println("Failed to update the new Firmware version to the Watson IoT Platform");
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}

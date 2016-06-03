@@ -24,6 +24,7 @@ import java.util.Scanner;
 import com.ibm.iotf.devicemgmt.DeviceFirmware;
 import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareState;
 import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareUpdateStatus;
+
 /**
  * A sample firmware update method that installs the debian package
  * with the following command
@@ -171,14 +172,7 @@ public class DebianFirmwareUpdate {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	/**
-	 * Since JDK7 doesn't take any timeout parameter, we provide an workaround
-	 * that wakes up every second and checks for the completion status of the process.
-	 * @param process
-	 * @param minutes
-	 * @return
-	 * @throws InterruptedException 
-	 */
+
 	private static boolean waitForCompletion(Process process, int minutes) throws InterruptedException {
 		long timeToWait = (60 * minutes);
 		
@@ -238,10 +232,6 @@ public class DebianFirmwareUpdate {
 	    return sb.toString();
 	}
 
-//	public void setDeviceFirmware(DeviceFirmware deviceFirmware) {
-//		// TODO Auto-generated method stub
-//		
-//	}
 	
 	public void setDeviceFirmware(DeviceFirmware deviceFirmware) {
 		this.deviceFirmware = deviceFirmware;

@@ -32,8 +32,8 @@ import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareState;
 import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareUpdateStatus;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 
-/** A sample method that downloads a firmware image (a debian file) from a HTTP server
- * 
+/** 
+ * A sample method that downloads a firmware image (a debian file) from a HTTP server
  */
 public class HTTPFirmwareDownload {
 	
@@ -181,6 +181,15 @@ public class HTTPFirmwareDownload {
 		this.dmClient.addLog(message, date, severity);
 	}
 	
+	/**
+	 * The verifyFirmware() method verifies if the downloaded firmware is complete and intact.
+	 * It requires the checksum to be passed, which shall be used to compare with the checksum
+	 * of the downloaded firmware.
+	 * @param file
+	 * @param verifier
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean verifyFirmware(File file, String verifier) throws IOException {
 		FileInputStream fis = null;
 		String md5 = null;

@@ -37,28 +37,24 @@ import com.ibm.iotf.sample.devicemgmt.device.SystemObject;
 /**
  * A sample device management agent code that shows the following core DM capabilities,
  * 
- * 1. Managed device
- * 2. Firmware update
- * 3. Device Reboot
- * 4. Location update 
- * 5. Diagnostic ErrorCode addition & clear
- * 6. Diagnostic Log addition & clear 
- * 7. Unmanage
+ * 1. Firmware update
+ * 2. Firmware Roll-back 
+ * 3. Factory Reset 
  * 
- * This sample takes a properties file where the device informations and Firmware
- * informations are present. There is a default properties file in the sample folder, this
- * class takes the default properties file if one not specified by user.
+ * This sample takes a properties file 'DMDeviceSample.properties' where the device informations 
+ * and Firmware information are present. There is a default properties file in the sample folder, 
+ * this class takes the default properties file if one not specified by user.
  * 
  * Refer to this link https://docs.internetofthings.ibmcloud.com/reference/device_mgmt.html
  * for more information about IBM Watson IoT Platform's DM capabilities 
  */
+
 public class DeviceFirmwareSample {
 	private final static String PROPERTIES_FILE_NAME = "/DMDeviceSample.properties";
 	private ManagedDevice dmClient;
 	
 	/**
-	 * This method builds the device objects required to create the
-	 * ManagedClient
+	 * This method builds the device objects required to create the ManagedClient
 	 * 
 	 * @param propertiesFile
 	 * @throws Exception
@@ -144,25 +140,14 @@ public class DeviceFirmwareSample {
 			// can also not be managed
 			sample.dmClient.sendManageRequest(0, true, true);
 			sample.createFirmwareHandlerBasedonUserSelection();
-			/**
-			 * Update a random Device Location. In reality, you may get the location of the 
-			 * device using the GPS and update it to Watson IoT Platform.
+
+			/** 
+			 *  A method that updates a random location
 			 */
 			sample.updateDeviceLocation();
 				
 				
-			// Initialize a firmware handler that handles the firmware update for the Gateway and 
-			// attached devices that supports firmware actions
-			
-				
-			// Initialize a device action handler that handles the reboot or reset request for the Gateway and 
-			// attached devices
-			
-				
 			/**
-			 * While the gateway publishes events on behalf of the attached devices, the gateway 
-			 * can publish its own events as well. 
-			 * 
 			 * The sample publishes a blink event every 5 seconds, that has the CPU and memory utilization of 
 			 * this sample Gateway process.
 			 */
@@ -197,8 +182,15 @@ public class DeviceFirmwareSample {
 		System.out.println(" Exiting...");
 	}
 	
+	/**
+	 * Load the Device properties file and read the user input on the source of
+	 * Firmware Upgrade. i.e whether the Firmware Upgrade needs to be initiated
+	 * by the Device or through the Platform. And if the choice is Platform, then
+	 * should it be with Background Download & Update option or not.
+	 * 
+	 * Here, the user input is captured against the property file parameter 'option'.
+	 */
 	private void createFirmwareHandlerBasedonUserSelection() {
-		// TODO Auto-generated method stub
 		
 		Properties props = new Properties();
 		try {
@@ -215,7 +207,8 @@ public class DeviceFirmwareSample {
 	}
 
 	/**
-	 * A method that updates a random location for the Gateway
+	 * Update a random Device Location. In reality, you may get the location of the 
+	 * device using the GPS and update it to Watson IoT Platform.
 	 */
 	private void updateDeviceLocation() {
 		Random random = new Random();
@@ -231,6 +224,12 @@ public class DeviceFirmwareSample {
 					latitude + " " + longitude +" " + elevation + "), rc ="+rc);
 		}
 	}
+	
+	/**
+	 * Method that helps trim the output of the Device Properties File
+	 * @param value
+	 * @return
+	 */
 	
 	private String trimedValue(String value) {
 		if(value == null || value == "") {
