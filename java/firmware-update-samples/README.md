@@ -6,8 +6,7 @@ These set of samples are intended to demonstrate ‘Firmware Upgrade’, one of 
 
 **Platform**
 
-
-**Platform with Background Download & Update **
+**Platform with Background Download & Update**
 
 Following stand-alone samples (present in this project) demonstrate Device Management samples through IBM Watson IoT Platform.
 
@@ -20,6 +19,10 @@ Following stand-alone samples (present in this project) demonstrate Device Manag
 **DebianFirmwareUpdate**                                : Sample that Updates the Firmware (Debian package), as downloaded from the Cloudant NoSQL Database
 
 **DeviceInitiatedHandlerSample**                        : Sample that performs Device Initiated Firmware Upgrade
+
+**PlatformInitiatedHandlerSample**                      : Sample that performs Platform Initiated Firmware Upgrade
+
+**PlatformInitiatedWithBkgrndDwnldHandlerSample**       : Sample that performs Platform Initiated Firmware Upgrade, but in the background, without affecting the operations running in the foreground
 
 The samples are written using the [Java Client Library](https://github.com/ibm-watson-iot/iot-java) for IBM Watson IoT Platform that simplifies the interactions with the IBM Watson IoT Platform.
 
@@ -46,6 +49,9 @@ Raspberry Pi with at least 8 GB SD Card
 
 Follow the steps [in this recipe](https://developer.ibm.com/recipes/tutorials/how-to-register-devices-in-ibm-iot-foundation/) to register your device in Watson IoT Platform if not registered already. And copy the registration details, like the following,
 
+**Device Credentials**
+
+
 Organization-ID = [Your Organization ID]
 
 Device-Type = [Your Device Type]
@@ -55,6 +61,18 @@ Device-ID = [Your Device ID]
 Authentication-Method = token
 
 Authentication-Token = [Your Device Token]
+
+**Application API-Key**
+
+id = [Unique Application ID]
+
+Organization-ID = [Your Organization ID]
+
+Authentication-Method = [apikey]
+
+API-Key = [API-Key]
+
+Authentication-Token = [Authentication-Token]
 
 We would need these details to connect the device to IBM Watson IoT Platform.
 
@@ -71,7 +89,7 @@ Step 4: Navigate to Service Credentials tab as shown below and note down the use
 
 ***
 
-### Build & Run the sample using Eclipse
+### Build & Run the Device Initiated Firmware Update sample using Eclipse
 
 You must have installed the [Eclipse Maven Plugin](http://www.eclipse.org/m2e/), to import & run the samples in eclipse. Go to the next step, if you want to run manually.
 
@@ -120,7 +138,7 @@ Clone the iot-device-samples project using git clone as follows,
 
 We are demonstrating the Device Initiated Firmware Update Sample in this recipe. Hence, navigate to the source directory structure of firmware update samples, within device initiated, as shown below:
 
-`cd iot-device-samples/java/firmware-update-samples/device-initiated`
+`cd iot-device-samples/java/firmware-update-samples/`
 
 Run the maven build as follows,
 
@@ -130,9 +148,9 @@ This will download the Java Client library for Watson IoT Platform, other requir
 
 ***
 
-### Running the Registered device sample outside Eclipse
+### Executing the Device Initiated Firmware Update sample outside Eclipse
 
-Step 1: Navigate to target/classes/Resources directory and modify DMDeviceSample.properties file with the registration details and Cloudant NoSQL DB Authentication details, that you noted in the earlier steps.
+Step 1: Navigate to target/classes/Resources directory and modify DMDeviceSample.properties file & application.properties file with the Device registration details and Cloudant NoSQL DB Authentication details, that you noted in the earlier steps.
 
 Step 2: Execute the **DeviceFirmwareSample** using the following command
 
@@ -148,34 +166,11 @@ Monitor the execution, as the Firmware Update Sample showcases the following in 
 
 4. Device Events published to Watson IoT Platform Dashboard at every 5 Second Interval
 
-`[INFO] Scanning for projects...
-[INFO]
-[INFO] ------------------------------------------------------------------------
-[INFO] Building ibmiot-firmware-update-samples 0.0.1-SNAPSHOT
-[INFO] ------------------------------------------------------------------------
-[INFO]
-[INFO] --- exec-maven-plugin:1.5.0:java (default-cli) @ ibmiot-firmware-update-samples ---
-Jun 02, 2016 9:08:27 PM com.ibm.iotf.client.AbstractClient createClient
-INFO: com.ibm.iotf.sample.devicemgmt.device.DeviceFirmwareSample.main(): Org ID = ofz8jz
- Client ID = d:ofz8jz:Device02:Device02
-Jun 02, 2016 9:08:28 PM com.ibm.iotf.client.AbstractClient connect
-INFO: com.ibm.iotf.sample.devicemgmt.device.DeviceFirmwareSample.main(): Connecting client d:ofz8jz:Device02:Device02 to ssl://ofz8jz.messaging.internetofthings.ibmcloud.com:8883 (attempt #1)...
-Jun 02, 2016 9:08:31 PM com.ibm.iotf.client.AbstractClient connect
-INFO: com.ibm.iotf.sample.devicemgmt.device.DeviceFirmwareSample.main(): Successfully connected to the IBM Watson IoT Platform
-https://a838b295-3d3d-44f6-a3a0-8467198eb9da-bluemix:acedc437ff7b19e03bc39f4e61d67f67b322f9655b3924fc5b62d79bc48b6dc3@a838b295-3d3d-44f6-a3a0-8467198eb9da-bluemix.cloudant.com
-log4j:WARN No appenders could be found for logger (org.lightcouch.CouchDbClient).
-log4j:WARN Please initialize the log4j system properly.
-log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
-Connected to Cloudant
-Server Version: 1.0.2
-Updated random location (30.93130888995652 -97.0837752030451 1.0) for Device
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.2,"mem":16513}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.0,"mem":16648}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.0,"mem":16648}`
+
 
 ***
 
-### Perform Firmware Upgrade, on the Run
+### Upload Latest Firmware package to Cloudant NoSQL DB, on the Run
 
 With the **DeviceFirmwareSample** continuing it's run, Upload a **New Firmware** to the Cloudant NoSQL Database Service. Do the following steps to upload the latest firmware on to the repository:
 
@@ -206,7 +201,7 @@ Click on ‘Save Changes’ to save the contents and complete the operation of e
 
 ***
 
-### Firmware Update
+### Monitor, how Device Initiated Firmware Update execution unfolds
 
 The Cloudant NoSQL Database has now been successfully uploaded with the latest version of the firmware. 
 
@@ -214,27 +209,107 @@ Continue to monitor the messages on the screen, where you had executed the Devic
 
 It initiates the Firmware Download action to have the firmware downloaded on to the local file system and on completion, triggers Firmware Update process. Finally, when the firmware upgrade is applied successfully on the Device, you should see the completion message.
 
-`<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.1,"mem":17247}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.0,"mem":17247}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.0,"mem":17247}
-{"_id":"8f8022bc07e299fb6856282366ea99a4","_rev":"20-4e704cd3b634f4df79d5dee6caff99cb","version":"1.0.3","_attachments":{"iot_1.0-3_armhf.deb":{"content_type":"application/octet-stream","revpos":19,"digest":"md5-dPCpTOUZm56jLqy/ASK04A==","length":110994,"stub":true}}}
-1.0.3
-Setting latest firmware to iot_1.0-3_armhf.deb
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":1.4,"mem":18432}
-Completed Restoration of Cloudant Document ID 8f8022bc07e299fb6856282366ea99a4 into the Debian package iot_1.0-3_armhf.deb
-com.ibm.iotf.sample.devicemgmt.device.DebianFirmwareUpdate: Firmware update start...
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":1.5,"mem":21430}
-Firmware Update command true
-com.ibm.iotf.sample.devicemgmt.device.DebianFirmwareUpdate: Firmware update End...
-value of status is true
-Successfully Upgraded Latest Firmware
-Updating the Firmware Version to the current version 1.0.3
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.3,"mem":22504}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.0,"mem":22508}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.1,"mem":22508}
-<-- Device event :: {"name":"Linux:4.4.9-v7+:arm","cpu":0.1,"mem":14925}`
-
 
 ***
 
 In this section, the Firmware Upgrade operation, as initiated by the Device was demonstrated to the completion, thus successfully concluding the objective set
+
+***
+
+### Build & Run the Platform Initiated Firmware Update sample using Eclipse
+
+Let us continue to use the project 'firmware-update-samples' within iot-device-samples, that was compiled & built earlier in the section **Build & Run the Device Initiated Firmware Update sample using Eclipse**, from Step 1 through to Step 7. Here, in this section, perform Platform Initiated Firmware Upgrade as follows:
+
+**Connect Device to the Watson IoT Platform and listen for Application**
+
+Once the build process is concluded successfully, Right-click on **DeviceFirmwareSample.java**, choose **Run-As** and then select **Java Application**
+
+`DeviceFirmwareSample.java -> Right Click -> Run-As -> Java Appliation`
+
+Monitor the execution, as the Firmware Update Sample showcases the following in the logs:
+
+1. Successful connection to Watson IoT Platform
+
+2. Successful connection to Cloudant NoSQL Database service
+
+3. Device Information (including Device Firmware Name and Firmware Version) is published to Watson IoT Platform Dashboard.
+
+4. Device Events updated to Watson IoT Platform Dashboard at every 5 Second interval
+
+5. Device waits to listen from the Watson IoT Platform for any commands being triggered by Application
+
+**Application Initiates connection to Watson IoT Platform and sends commands to Device**
+
+Right-click on **ApplicationFirmwareRequestSample.java**, choose **Run-As** and then select **Java Application**
+
+`ApplicationFirmwareRequestSample.java -> Right Click -> Run-As -> Java Appliation`
+
+Monitor the execution, as the Firmware Update Sample showcases the following in the logs:
+
+1. Successful connection to Watson IoT Platform. Fetches the Device Information, primarily Device Firmware Name and Firmware Version
+
+2. Successful connection to Cloudant NoSQL Database service. 
+
+3. Compares the Device Firmware Version with the Firmware available on Cloudant NoSQL Database **firmware_repository**
+
+4. If the 'firmware_repository' has the latest version, then, it triggers Firmware Download
+
+5. Successful completion of Firmware Download, immediately triggers Firmware Update action
+
+6. With the Firmware Update process concluding smoothly, the Application waits till the time for next invocation, elapses
+
+
+
+***
+
+### Building the Platform Initiated Firmware sample - Required if you want to run the samples outside of Eclipse
+
+Clone the iot-device-samples project using git clone as follows,
+
+` git clone https://github.com/ibm-messaging/iot-device-samples.git`
+
+We are demonstrating the Platform Initiated Firmware Update Sample in this recipe. Hence, navigate to the source directory structure of firmware update samples, as shown below:
+
+`cd iot-device-samples/java/firmware-update-samples/`
+
+Run the maven build as follows,
+
+`mvn clean package`
+
+This will download the Java Client library for Watson IoT Platform, other required dependencies and starts the building process. 
+
+***
+
+### Executing the Platform Initiated Firmware Update sample outside Eclipse
+
+Step 1: Navigate to target/classes/Resources directory and modify DMDeviceSample.properties file & application.properties file with the Device registration details and Cloudant NoSQL DB Authentication details, that you noted in the earlier steps.
+
+Step 2: Execute the **DeviceFirmwareSample** using the following command
+
+`mvn exec:java -Dexec.mainClass="com.ibm.iotf.sample.client.application.ApplicationFirmwareRequestSample"`
+
+Monitor the execution, as the Firmware Update Sample showcases the following in the logs:
+
+1. Successful connection to Watson IoT Platform. Fetches the Device Information, primarily Device Firmware Name and Firmware Version
+
+2. Successful connection to Cloudant NoSQL Database service. 
+
+3. Compares the Device Firmware Version with the Firmware available on Cloudant NoSQL Database **firmware_repository**
+
+4. If the 'firmware_repository' has the latest version, then, it triggers Firmware Download
+
+5. Successful completion of Firmware Download, immediately triggers Firmware Update action
+
+6. With the Firmware Update process concluding smoothly, the Application waits till the time for next invocation, elapses
+
+
+
+***
+
+
+### 
+
+In this section, the Firmware Upgrade operation, as initiated by the Platform was demonstrated to the completion, thus successfully concluding the objective set
+
+
+***
