@@ -1,9 +1,11 @@
 # Firmware Update Samples
 
 These set of samples are intended to demonstrate ‘Firmware Upgrade’, one of the device management capabilities, as initiated by:
+
 **Device**
 
 **Platform**
+
 
 **Platform with Background Download & Update **
 
