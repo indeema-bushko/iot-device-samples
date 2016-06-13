@@ -13,7 +13,6 @@
  */
 package com.ibm.iotf.sample.devicemgmt.device;
 
-//import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,15 +20,15 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import com.ibm.iotf.devicemgmt.DeviceFirmware;
 import com.ibm.iotf.devicemgmt.DeviceInfo;
-//import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareState;
-//import com.ibm.iotf.devicemgmt.DeviceFirmware.FirmwareUpdateStatus;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 
 /**
  * This Platform Initiated Firmware handler demonstrates how the Firmware Upgrade 
  * is performed, with the package being downloaded by providing the URL over the 
- * Platform and have it upgraded in simple steps. On failure, the sample performs 
- * the factory reset.
+ * Platform and have it upgraded in simple steps. On failure, the sample prefers 
+ * to restore the current firmware version on the Device and if that doesn't 
+ * happen successfully, then it performs factory reset, to apply factory version
+ * of the Firmware
  */
 
 public class PlatformInitiatedHandlerSample extends Handler {
@@ -56,13 +55,6 @@ public class PlatformInitiatedHandlerSample extends Handler {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Create Handler
-	 * Add it to Library
-	 * Make the platform to call back the method / function
-	 * https://github.com/ibm-watson-iot/iot-java/blob/master/docs/java_cli_for_manageddevice.rst
-	 */
 	
 	@Override
 	public void downloadFirmware(final DeviceFirmware deviceFirmware) {
@@ -108,7 +100,6 @@ public class PlatformInitiatedHandlerSample extends Handler {
 					} 
 				}
 				updateWatsonIoT();
-//				System.out.println("Failed to perform Firmware Upgrade Operation!");
 			}
 		};
 		
