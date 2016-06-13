@@ -13,53 +13,30 @@
  */
 package com.ibm.iotf.sample.devicemgmt.device;
 
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import com.ibm.iotf.devicemgmt.DeviceFirmware;
-
+import com.ibm.iotf.devicemgmt.DeviceInfo;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
-
 
 /**
  * This Platform Initiated Firmware handler demonstrates how the Firmware Upgrade 
  * is performed, with the package being downloaded by providing the URL over the 
  * Platform ( with the download action being performed in the background, without
- * affecting the foreground applications) and have it upgraded in simple steps. 
- * On failure, the sample performs the factory reset.
+ * affecting the foreground applications) and have it upgraded in simple steps. On
+ * failure, the sample prefers to restore the current firmware version on the 
+ * Device and if that doesn't happen successfully, then it performs factory reset, 
+ * to apply factory version of the Firmware
  */
 
-public class PlatformInitiatedWithBkgrndDwnldHandlerSample extends PlatformInitiatedHandlerSample{
-	
-//	private static ExecutorService executor = Executors.newSingleThreadExecutor();
-
-	public PlatformInitiatedWithBkgrndDwnldHandlerSample(ManagedDevice dmClient) {
-		super(dmClient);
-		
-		// TODO Auto-generated constructor stub
-	}
-
-	
-//	private Database firmwareDB;
-//	private String firmwareDBSequence;
-//	private String docId;
-//	private static String currentFirmware = "iot_1.0-2_armhf.deb";
-//	private String currentFirmwareVersion;
-//	private String latestFirmwareVersion;
-	private static String latestFirmware;
-	
-//	private URL firmwareURL = null;
+public class PlatformInitiatedWithBkgrndDwnldHandlerSample extends Handler {
 	
 	// private static ExecutorService executor = Executors.newSingleThreadExecutor();
-//	private static final String CLASS_NAME = PlatformInitiatedWithBkgrndDwnldHandlerSample.class.getName();
-	private ManagedDevice managedDevice;
-//	private ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(1);
-
-	
-	private ExecutorService exec = Executors.newFixedThreadPool(1,
+	private static ExecutorService executor = Executors.newFixedThreadPool(1,
 	        new ThreadFactory() {
 	            public Thread newThread(Runnable r) {
 	                Thread t = Executors.defaultThreadFactory().newThread(r);
@@ -68,33 +45,31 @@ public class PlatformInitiatedWithBkgrndDwnldHandlerSample extends PlatformIniti
 	            }
 	        });
 	
+	private String currentFirmwareVersion = "1.0.3";
+
+	public PlatformInitiatedWithBkgrndDwnldHandlerSample(ManagedDevice dmClient) {
+		super(dmClient);
+	}
 	
 	@Override
 	public void prepare(String propertiesFile) {
 		
 		// Create download task
-		downloadTask = new HTTPFirmwareDownload(true, managedDevice);
+		downloadTask = new HTTPFirmwareDownload(true, this.dmClient);
 		
 		// Create update task
-		updateTask = new DebianFirmwareUpdate(false);
+		updateTask = new DebianFirmwareUpdate(true);
 		
 		try {
-			managedDevice.addFirmwareHandler(this);
+			dmClient.addFirmwareHandler(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	/**
-	 * Create Handler
-	 * Add it to Library
-	 * Make the platform to call back the method / function
-	 * https://github.com/ibm-watson-iot/iot-java/blob/master/docs/java_cli_for_manageddevice.rst
-	 */
-	
 	@Override
 	public void downloadFirmware(final DeviceFirmware deviceFirmware) {
-		
+		System.out.println("Recieved Firmware Download Request");		
 		Runnable r = new Runnable() {
 			public void run() {
 				downloadTask.setDeviceFirmware(deviceFirmware);
@@ -103,11 +78,12 @@ public class PlatformInitiatedWithBkgrndDwnldHandlerSample extends PlatformIniti
 			}
 		};
 		
-		exec.execute(r);
+		executor.execute(r);
 	}
 	
 	@Override
 	public void updateFirmware(final DeviceFirmware deviceFirmware) {
+		System.out.println("Recieved Firmware Update Request");		
 		Runnable r = new Runnable(){
 			public void run(){
 				updateTask.setDeviceFirmware(deviceFirmware);
@@ -119,32 +95,41 @@ public class PlatformInitiatedWithBkgrndDwnldHandlerSample extends PlatformIniti
 				 * Trigger the upgrade to the latest firmware
 				 */
 				if ( status == true ){
-					System.out.println("Successfully Upgraded Latest Firmware");
 					setCurrentFirmware(getLatestFirmware());
+					currentFirmwareVersion = deviceFirmware.getVersion();
+					System.out.println("Successfully Upgraded the Device with latest firmware");
 				} else {
-					System.out.println("Upgrade failed. Reverting back to the current version");
-					status = updateTask.updateFirmware(getLatestFirmware());
+					System.out.println("Upgrade failed. Rolling back to the current version");
+					status = updateTask.updateFirmware(getCurrentFirmware());
 					if (status == true) {
-						System.out.println("Retained Current Firmware as is ");
+						System.out.println("Successfully rolled back. Retained Current Firmware as-is ");
 					} else {
 						updateTask.updateFirmware(Handler.FACTORY_FIRMWARE_NAME);
-						System.out.println("Restored Factory Firmware version after failing to revert back to Current version");
+						System.out.println("Restored Factory Firmware version after roll back to Current version failed");
 						setCurrentFirmware(Handler.FACTORY_FIRMWARE_NAME);
+						currentFirmwareVersion = Handler.FACTORY_FIRMWARE_VERSION;
 					} 
 				}
+				updateWatsonIoT();
 			}
 		};
 		
-		exec.execute(r);
+		executor.execute(r);
 	}
 	
-	private static String trimedValue(String value) {
-		if(value == null || value == "") {
-			return "";
-		} else {
-			return value.trim();
-		}
+	/**
+	 * The updateWatsonIoT() method, post completion of Firmware Upgrade, updates the 
+	 * Watson IoT Platform with the Firmware version details
+	 */
+	private void updateWatsonIoT() {
+		DeviceInfo deviceInfo = dmClient.getDeviceData().getDeviceInfo();
+		System.out.println("Updating the current firmware version "+currentFirmwareVersion+" as the Device Firmware Version on Watson IoT Platform Dashboard ");
+		deviceInfo.setFwVersion(currentFirmwareVersion);
+		try {
+			dmClient.sendManageRequest(0, true, true);
+		} catch (MqttException e) {
+			System.err.println("Failed to update the new Firmware version to the Watson IoT Platform");
+			e.printStackTrace();
+		}	
 	}
-	
 }	
-	
