@@ -63,11 +63,8 @@ public class ApplicationFirmwareRequestSample {
 	private String latestFirmwareVersion;
 	
 	private static URL url = null;
-//	private static URL firmwareURL = null;
-//	private static  URLConnection urlConnection = null;
-//	
+
 	ManagedDevice dmClient;
-//	private String downloadedFirmwareName = null;
 	
 	protected final static JsonParser JSON_PARSER = new JsonParser();
 
@@ -111,7 +108,6 @@ public class ApplicationFirmwareRequestSample {
 			System.out.println("Connected to Cloudant");
 			System.out.println("Server Version: " + client.serverVersion());
 	
-			// firmwareDB = client.database("firmwareDB", true);
 			firmwareDB = client.database(dbName, false);
 			System.out.println("Value of Cloudant DB is "+firmwareDB);
 		} catch (Exception e) {
@@ -126,16 +122,22 @@ public class ApplicationFirmwareRequestSample {
 		sample.getDeviceFwVersion();
 		while(true) {
 			try {
+				// Check on Cloudant DB to see if any latest firmware is available
+				// If yes, then, Initiate Firmware Download, else, wait and check again after SLEEP time elapses
 				if(sample.checkIfNewFirmwareImage()) {
 					if(sample.initialteFirmwareDownloadRequest()) {
+						// Wait for the Download to complete and receive an acknowledgement from the Device
 						sample.waitForRequestToFinish();
+						// Once the acknowledgement on the completion of Firmware Donwload comes in, initiate Firmware Update
 						if(sample.initialteFirmwareUpdateRequest()) {
+							// Wait for the Firmware Update action to complete and receive an acknowledgement from the Device
 							sample.waitForRequestToFinish();
-							// call getdevice to get the latest firmware details from the device
+							// call getDeviceFwVersion to get the latest firmware version details from the device
 							sample.getDeviceFwVersion();
 						}
 					}
 				}
+				// SLEEP for the defined time, if the Cloudant DB has the Firmware of same version, as available on the Device
 				Thread.sleep(1000 * 60);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -143,7 +145,14 @@ public class ApplicationFirmwareRequestSample {
 		}
 	}
 	
+	/**
+	 * The following method helps initiated Device Management Request
+	 * Firmware Update, being triggered from Application and initiated 
+	 * through Watson IoT Platform
+	 * @return
+	 */
 	private boolean initialteFirmwareUpdateRequest() {
+		// Prepare the Device Action as Firmware Update
 		String updateRequest = "{\"action\": \"firmware/update\", \"devices\": [{\"typeId\": \"" + 
 						deviceType + "\",\"deviceId\": \"" + deviceId + "\"}]}";
 		
@@ -162,12 +171,15 @@ public class ApplicationFirmwareRequestSample {
 		
 	}
 
+	/**
+	 * The following method showcases steps to construct the URL to download the
+	 * latest Firmware from the Cloudant NoSQL DB and helps create the Device Management
+	 * request 'Firmware Download'.
+	 * @return
+	 */
 	public boolean initialteFirmwareDownloadRequest() {
 		
-//		System.out.println("Value of dbName is "+dbName);
-//		System.out.println("Value of documentId is "+documentId);
-//		System.out.println("Value of attachmentName is "+attachmentName);
-		
+		// Construct the URL to download the Debian Package from the Cloudant NoSQL DB 
 		String buildURL = ("https://" +username +".cloudant.com/" + dbName + "/" + documentId + "/" + attachmentName);
 		
 		try {
@@ -177,6 +189,8 @@ public class ApplicationFirmwareRequestSample {
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
+		
+		// Prepare the Device Action as Firmware Download, passing the constructed URL
 		
 		String downloadRequest = "{\"action\": \"firmware/download\", \"parameters\": ["
 				+ "{\"name\": \"version\", \"value\": \"" + latestFirmwareVersion + "\" }," + 
@@ -200,6 +214,12 @@ public class ApplicationFirmwareRequestSample {
 					
 	}
 	
+	/**
+	 * The following method sends an acknowledgement from Device to Application,
+	 * mentioning the status of the execution of Device Action, as triggered
+	 * by the Application through Watson IoT Platform
+	 * @throws IoTFCReSTException
+	 */
 	private void waitForRequestToFinish() throws IoTFCReSTException {
 		JsonElement response = this.apiClient.getAllDeviceManagementRequests();
 		JsonArray requests = response.getAsJsonObject().get("results").getAsJsonArray();
@@ -231,6 +251,13 @@ public class ApplicationFirmwareRequestSample {
 		}
 	}
 	
+	/**
+	 * The following method snoops the Cloudant NoSQL DB to see, if there's a newer version
+	 * of Firmware, whose version is greater than that of the Firmware, that is currently
+	 * active on the Device. If yes, it triggers Firmware Download action. Else, it waits
+	 * till the Sleep time elapses and does the check again.
+	 * @return
+	 */
 	public boolean checkIfNewFirmwareImage() {
 			
 		ChangesResult changes = null;
@@ -268,7 +295,6 @@ public class ApplicationFirmwareRequestSample {
 //                	// System.out.println("Value of docId is " +docId);
                 	latestFirmwareVersion = retrievedVersion;
                 	version = retrievedVersion;
-//                	
                     
 	                JsonObject obj = attachment.get("_attachments").getAsJsonObject();
 					Set<Entry<String, JsonElement>> entrySet = obj.entrySet();
