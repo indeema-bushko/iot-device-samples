@@ -14,6 +14,8 @@
 
 package com.ibm.iotf.sample.devicemgmt.device;
 
+import com.ibm.iotf.devicemgmt.DeviceData;
+import com.ibm.iotf.devicemgmt.DeviceFirmware;
 import com.ibm.iotf.devicemgmt.DeviceFirmwareHandler;
 import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 
@@ -25,12 +27,22 @@ public abstract class Handler extends DeviceFirmwareHandler {
 	
 	public Handler(ManagedDevice dmClient) {
 		this.dmClient = dmClient;
+		DeviceData deviceData = dmClient.getDeviceData();
+		if(null != deviceData) {
+			DeviceFirmware firm = deviceData.getDeviceFirmware();
+			if(null != firm) {
+				currentFirmware = firm.getName();
+				currentFirmwareVersion = firm.getVersion();
+			}
+		}
 	}
 	
 	protected abstract void prepare(String propertiesFile);
 	
 	protected String currentFirmware = "iot_1.0-2_armhf.deb";
 	protected String latestFirmware;
+	protected String currentFirmwareVersion = "1.0.2";
+	
 	protected HTTPFirmwareDownload downloadTask;
 	protected DebianFirmwareUpdate updateTask;
 	

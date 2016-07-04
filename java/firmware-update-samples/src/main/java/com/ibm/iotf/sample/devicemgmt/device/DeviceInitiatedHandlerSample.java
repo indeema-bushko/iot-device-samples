@@ -69,7 +69,6 @@ public class DeviceInitiatedHandlerSample extends Handler implements Runnable {
 	private Database firmwareDB;
 	private String firmwareDBSequence;
 	private String docId;
-	private String currentFirmwareVersion = "1.0.2";
 	private String latestFirmwareVersion;
 	
 	/**

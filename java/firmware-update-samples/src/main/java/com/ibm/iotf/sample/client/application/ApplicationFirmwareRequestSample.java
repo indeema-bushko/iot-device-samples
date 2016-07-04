@@ -51,7 +51,7 @@ public class ApplicationFirmwareRequestSample {
 	private String password = null;
 	private String documentId = null;
 	private String attachmentName = null;
-	private String deviceFwVersion;
+	private String deviceFwVersion = "1.0.2";
 	private String dbName;
 	private String deviceType;
 	private String deviceId;
@@ -125,11 +125,11 @@ public class ApplicationFirmwareRequestSample {
 				// Check on Cloudant DB to see if any latest firmware is available
 				// If yes, then, Initiate Firmware Download, else, wait and check again after SLEEP time elapses
 				if(sample.checkIfNewFirmwareImage()) {
-					if(sample.initialteFirmwareDownloadRequest()) {
+					if(sample.initiateFirmwareDownloadRequest()) {
 						// Wait for the Download to complete and receive an acknowledgement from the Device
 						sample.waitForRequestToFinish();
 						// Once the acknowledgement on the completion of Firmware Donwload comes in, initiate Firmware Update
-						if(sample.initialteFirmwareUpdateRequest()) {
+						if(sample.initiateFirmwareUpdateRequest()) {
 							// Wait for the Firmware Update action to complete and receive an acknowledgement from the Device
 							sample.waitForRequestToFinish();
 							// call getDeviceFwVersion to get the latest firmware version details from the device
@@ -151,7 +151,15 @@ public class ApplicationFirmwareRequestSample {
 	 * through Watson IoT Platform
 	 * @return
 	 */
-	private boolean initialteFirmwareUpdateRequest() {
+	private boolean initiateFirmwareUpdateRequest() {
+		
+		try {
+			clearAllDMRequests();
+		} catch (IoTFCReSTException e1) {
+			System.out.println("Cleared all the Device Management Requests, to start clean");
+			e1.printStackTrace();
+		}
+		
 		// Prepare the Device Action as Firmware Update
 		String updateRequest = "{\"action\": \"firmware/update\", \"devices\": [{\"typeId\": \"" + 
 						deviceType + "\",\"deviceId\": \"" + deviceId + "\"}]}";
@@ -162,12 +170,25 @@ public class ApplicationFirmwareRequestSample {
 		try {
 			response = apiClient.initiateDeviceManagementRequest(update);
 		} catch (IoTFCReSTException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(response);
 		
 		return response;
+		
+	}
+	
+	
+	private void clearAllDMRequests() throws IoTFCReSTException {
+		JsonElement response = this.apiClient.getAllDeviceManagementRequests();
+		if(response.getAsJsonObject().get("results") != null) {
+			JsonArray requests = response.getAsJsonObject().get("results").getAsJsonArray();
+			for(int i = 0; i < requests.size(); i++) {
+				JsonElement request = requests.get(i);
+				String requestId = request.getAsJsonObject().get("id").getAsString();
+				this.apiClient.deleteDeviceManagementRequest(requestId);
+			}
+		}
 		
 	}
 
@@ -177,7 +198,13 @@ public class ApplicationFirmwareRequestSample {
 	 * request 'Firmware Download'.
 	 * @return
 	 */
-	public boolean initialteFirmwareDownloadRequest() {
+	public boolean initiateFirmwareDownloadRequest() {
+		try {
+			clearAllDMRequests();
+		} catch (IoTFCReSTException e1) {
+			System.out.println("Cleared all the Device Management Requests, to start clean");
+			e1.printStackTrace();
+		}
 		
 		// Construct the URL to download the Debian Package from the Cloudant NoSQL DB 
 		String buildURL = ("https://" +username +".cloudant.com/" + dbName + "/" + documentId + "/" + attachmentName);
@@ -205,7 +232,6 @@ public class ApplicationFirmwareRequestSample {
 			
 			response = apiClient.initiateDeviceManagementRequest(download);
 		} catch (IoTFCReSTException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(response);
@@ -237,7 +263,6 @@ public class ApplicationFirmwareRequestSample {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -276,36 +301,40 @@ public class ApplicationFirmwareRequestSample {
 		boolean firmwareAvailable = false;
 		if(changes.getResults().size() != 0) {
 			List<ChangesResult.Row> rows = changes.getResults();
-			List<JsonObject> jsonList = new ArrayList<JsonObject>(rows.size());
 			
 			for (Row row : rows) {
-				jsonList.add(row.getDoc());
 				JsonObject attachment = row.getDoc();
-				if(attachment.get("_deleted") != null && attachment.get("_deleted").getAsBoolean() == true) {
-					continue;
-				}
 				
-				System.out.println(attachment);
-				String retrievedVersion = attachment.get("version").getAsString();
-				System.out.println(retrievedVersion);
-				if(isVersionGreater(version, retrievedVersion)) {
-                	firmwareAvailable = true;
-                	String docId = row.getId();
-                	documentId = docId.toString();
-//                	// System.out.println("Value of docId is " +docId);
-                	latestFirmwareVersion = retrievedVersion;
-                	version = retrievedVersion;
-                    
-	                JsonObject obj = attachment.get("_attachments").getAsJsonObject();
-					Set<Entry<String, JsonElement>> entrySet = obj.entrySet();
-									
-					Iterator<Entry<String, JsonElement>> itr = entrySet.iterator();
-					if(itr.hasNext()) {
-						Entry<String, JsonElement> entry = itr.next();
-						setLatestFirmware(entry.getKey());
-						attachmentName = entry.getKey();
-						System.out.println("Setting latest firmware to "+entry.getKey());
-						// attachmentName = entry.getKey().toString();
+				if (attachment != null) {
+					
+					if(attachment.get("_deleted") != null && attachment.get("_deleted").getAsBoolean() == true) {
+						continue;
+					}
+					
+					if(attachment.get("version") != null && attachment.get("_attachments") != null) {
+						System.out.println(attachment);
+						String retrievedVersion = attachment.get("version").getAsString();
+						System.out.println(retrievedVersion);
+						if(isVersionGreater(version, retrievedVersion)) {
+		                	firmwareAvailable = true;
+		                	String docId = row.getId();
+		                	documentId = docId.toString();
+		//                	// System.out.println("Value of docId is " +docId);
+		                	latestFirmwareVersion = retrievedVersion;
+		                	version = retrievedVersion;
+		                    
+			                JsonObject obj = attachment.get("_attachments").getAsJsonObject();
+							Set<Entry<String, JsonElement>> entrySet = obj.entrySet();
+											
+							Iterator<Entry<String, JsonElement>> itr = entrySet.iterator();
+							if(itr.hasNext()) {
+								Entry<String, JsonElement> entry = itr.next();
+								setLatestFirmware(entry.getKey());
+								attachmentName = entry.getKey();
+								System.out.println("Setting latest firmware to "+entry.getKey());
+								// attachmentName = entry.getKey().toString();
+							}
+						}
 					}
 				}
 			}
@@ -372,9 +401,12 @@ public class ApplicationFirmwareRequestSample {
 			
 			// JsonElement 
 			
-			if (response.get("deviceInfo").getAsJsonObject() != null ){
+			if (response.get("deviceInfo") != null){
 				JsonObject deviceInfo = response.get("deviceInfo").getAsJsonObject();
-				deviceFwVersion = deviceInfo.get("fwVersion").getAsString();
+				System.out.println(deviceInfo);
+				if(deviceInfo.get("fwVersion") != null) {
+					deviceFwVersion = deviceInfo.get("fwVersion").getAsString();
+				}
 			} else {
 				System.out.println("Device Info is Null, Considering the default criteria!");
 			}

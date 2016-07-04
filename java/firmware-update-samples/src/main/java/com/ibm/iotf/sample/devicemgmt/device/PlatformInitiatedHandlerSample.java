@@ -34,7 +34,6 @@ import com.ibm.iotf.devicemgmt.device.ManagedDevice;
 public class PlatformInitiatedHandlerSample extends Handler {
 	
 	private static ExecutorService executor = Executors.newSingleThreadExecutor();
-	private String currentFirmwareVersion = "1.0.3";
 
 	public PlatformInitiatedHandlerSample(ManagedDevice dmClient) {
 		super(dmClient);
