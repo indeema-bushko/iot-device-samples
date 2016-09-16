@@ -17,10 +17,7 @@ package com.ibm.iotf.sample.client.device;
 
 import java.io.IOException;
 import java.util.Properties;
-
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ibm.iotf.client.api.APIClient;
 import com.ibm.iotf.client.device.DeviceClient;
 import com.ibm.iotf.sample.client.SystemObject;
 
@@ -47,10 +44,10 @@ public class HttpDeviceEventPublish {
 			System.exit(-1);
 		}		
 		
-		APIClient myClient = null;
+		DeviceClient myClient = null;
 		try {
 			//Instantiate the class by passing the properties file
-			myClient = new APIClient(props);
+			myClient = new DeviceClient(props);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -62,7 +59,7 @@ public class HttpDeviceEventPublish {
 		 * Publishes the process load event for every 1 second
 		 */
 		while(true) {
-			
+			int code = 0;
 			try {
 				//Generate a JSON object of the event to be published
 				JsonObject event = new JsonObject();
@@ -70,15 +67,18 @@ public class HttpDeviceEventPublish {
 				event.addProperty("cpu",  obj.getProcessCpuLoad());
 				event.addProperty("mem",  obj.getMemoryUsed());
 				
-				boolean response = myClient.publishDeviceEventOverHTTP("blink", event);
-				if(response == true)
-					System.out.println("Published Device Event Successfully!");
-				else
-					System.out.println("Failed Publishing Device Event!");
+				code = myClient.publishEventOverHTTP("blink", event);
 				Thread.sleep(1000);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}			
+			}
+			
+			if(code == 200) {
+				System.out.println("Published the event successfully !");
+			} else {
+				System.out.println("Failed to publish the event......");
+				System.exit(-1);
+			}
 		}
 	}
 	
