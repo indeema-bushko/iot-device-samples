@@ -47,10 +47,11 @@ public class HttpDeviceEventPublish {
 			System.exit(-1);
 		}		
 		
-		APIClient myClient = null;
+		DeviceClient myClient = null;
+		//APIClient myClient = null;
 		try {
 			//Instantiate the class by passing the properties file
-			myClient = new APIClient(props);
+			myClient = new DeviceClient(props);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(-1);
@@ -70,7 +71,7 @@ public class HttpDeviceEventPublish {
 				event.addProperty("cpu",  obj.getProcessCpuLoad());
 				event.addProperty("mem",  obj.getMemoryUsed());
 				
-				boolean response = myClient.publishDeviceEventOverHTTP("blink", event);
+				boolean response = myClient.api().publishDeviceEventOverHTTP("blink", event,"xml");
 				if(response == true)
 					System.out.println("Published Device Event Successfully!");
 				else
