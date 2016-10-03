@@ -18,9 +18,8 @@ package com.ibm.iotf.sample.client.device;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ibm.iotf.client.api.APIClient;
+import com.ibm.iotf.client.api.APIClient.ContentType;
 import com.ibm.iotf.client.device.DeviceClient;
 import com.ibm.iotf.sample.client.SystemObject;
 
@@ -71,7 +70,7 @@ public class HttpDeviceEventPublish {
 				event.addProperty("cpu",  obj.getProcessCpuLoad());
 				event.addProperty("mem",  obj.getMemoryUsed());
 				
-				boolean response = myClient.api().publishDeviceEventOverHTTP("blink", event,"xml");
+				boolean response = myClient.api().publishDeviceEventOverHTTP("blink", event, ContentType.json);
 				if(response == true)
 					System.out.println("Published Device Event Successfully!");
 				else
