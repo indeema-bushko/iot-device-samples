@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ibm.messaging</groupId>
   <artifactId>ibmiot-device-management-sample</artifactId>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <name>ibmiot-device-management-sample</name>
   <description>This repository contains samples for connecting your device as managed device to IBM Watson Internet of Things Platform</description>
   
@@ -51,7 +51,7 @@
     	<dependency>
 	  		<groupId>com.ibm.messaging</groupId>
 	  		<artifactId>watson-iot</artifactId>
-	  		<version>0.1.4</version>
+	  		<version>0.2.4</version>
 		</dependency>
     </dependencies>
 
