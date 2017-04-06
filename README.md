@@ -13,6 +13,5 @@ Currently, there are samples for Java and Node-RED; information and instructions
 ### License
 -----------------------
 
-The library is shipped with Eclipse Public License and refer to the [License file] (https://github.com/ibm-messaging/iot-device-samples
-/blob/master/LICENSE) for more information about the licensing.
+The library is shipped with Eclipse Public License and refer to the [License file](https://github.com/ibm-messaging/iot-device-samples/blob/master/LICENSE) for more information about the licensing.
 
