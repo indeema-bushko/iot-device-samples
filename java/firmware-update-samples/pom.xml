@@ -64,7 +64,7 @@
   	<dependency>
     	<groupId>com.ibm.messaging</groupId>
     	<artifactId>watson-iot</artifactId>
-    	<version>0.1.4</version>
+    	<version>0.2.4</version>
 	</dependency>
 	<dependency>
         <groupId>com.cloudant</groupId>
